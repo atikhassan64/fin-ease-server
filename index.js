@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -29,9 +29,53 @@ async function run() {
         const database = client.db("finEaseDB");
         const finEaseCollection = database.collection("transactions");
 
-        app.post('/add-transaction', async (req, res) => {
+        app.post('/transactions', async (req, res) => {
             const addTransaction = req.body;
             const result = await finEaseCollection.insertOne(addTransaction);
+            res.send(result);
+        })
+
+        app.get('/transactions', async (req, res) => {
+            const email = req.query.email;
+            const query = {};
+            console.log(email)
+            if (email) {
+                query.email = email;
+            }
+            const cursor = finEaseCollection.find(query);
+            const result = await cursor.toArray();
+            res.send(result);
+        })
+
+        app.get('/transactions/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await finEaseCollection.findOne(query);
+            res.send(result);
+        })
+
+        app.patch('/transactions/:id', async (req, res) => {
+            const id = req.params.id;
+            const updateTransaction = req.body;
+            const query = { _id: new ObjectId(id) };
+            const update = {
+                $set: {
+                    type: updateTransaction.type,
+                    category: updateTransaction.category,
+                    amount: updateTransaction.amount,
+                    description: updateTransaction.description,
+                    date: updateTransaction.date
+                }
+            }
+            const options = {};
+            const result = await finEaseCollection.updateOne(query, update, options);
+            res.send(result);
+        })
+
+        app.delete('/transactions/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await finEaseCollection.deleteOne(query);
             res.send(result);
         })
 
