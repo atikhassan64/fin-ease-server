@@ -25,6 +25,16 @@ app.get('/', (req, res) => {
 async function run() {
     try {
         await client.connect();
+
+        const database = client.db("finEaseDB");
+        const finEaseCollection = database.collection("transactions");
+
+        app.post('/add-transaction', async (req, res) => {
+            const addTransaction = req.body;
+            const result = await finEaseCollection.insertOne(addTransaction);
+            res.send(result);
+        })
+
         await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
     }
