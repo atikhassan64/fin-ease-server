@@ -44,8 +44,15 @@ async function run() {
             if (email) {
                 query.email = email;
             }
-            
-            const cursor = finEaseCollection.find(query);
+
+            const sortOption = {};
+            if(sortBy === "amount"){
+                sortOption.amount = order;
+            }
+            else{
+                sortOption.date = order;
+            }
+            const cursor = finEaseCollection.find(query).sort(sortOption);
             const result = await cursor.toArray();
             res.send(result);
         })
