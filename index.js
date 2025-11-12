@@ -37,10 +37,14 @@ async function run() {
 
         app.get('/transactions', async (req, res) => {
             const email = req.query.email;
+            const sortBy = req.query.sortBy;
+            const order = req.query.order === 'asc' ? 1 : -1;
+
             const query = {};
             if (email) {
                 query.email = email;
             }
+            
             const cursor = finEaseCollection.find(query);
             const result = await cursor.toArray();
             res.send(result);
