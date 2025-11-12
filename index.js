@@ -38,7 +38,6 @@ async function run() {
         app.get('/transactions', async (req, res) => {
             const email = req.query.email;
             const query = {};
-            console.log(email)
             if (email) {
                 query.email = email;
             }
