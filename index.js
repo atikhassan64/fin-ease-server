@@ -58,7 +58,6 @@ async function run() {
                 res.status(200).json(result);
 
             } catch (error) {
-                // console.error("Error fetching transactions:", error);
                 res.status(500).json({ message: "Internal Server Error" });
             }
         });
@@ -94,9 +93,6 @@ async function run() {
             const result = await finEaseCollection.deleteOne(query);
             res.send(result);
         })
-
-        await client.db("admin").command({ ping: 1 });
-        console.log("Pinged your deployment. You successfully connected to MongoDB!");
     }
 
     finally {
