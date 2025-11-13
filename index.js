@@ -36,26 +36,32 @@ async function run() {
         })
 
         app.get('/transactions', async (req, res) => {
-            const email = req.query.email;
-            const sortBy = req.query.sortBy;
-            const order = req.query.order === 'asc' ? 1 : -1;
+            try {
+                const email = req.query.email;
+                const sortBy = req.query.sortBy; 
 
-            const query = {};
-            if (email) {
-                query.email = email;
-            }
+                const query = {};
+                if (email) {
+                    query.email = email;
+                }
 
-            const sortOption = {};
-            if(sortBy === "amount"){
-                sortOption.amount = order;
+                let sortOption = {};
+                if (sortBy === 'amount') {
+                    sortOption.amount = -1; 
+                } else {
+                    sortOption.date = -1;   
+                }
+
+                const cursor = finEaseCollection.find(query).sort(sortOption);
+                const result = await cursor.toArray();
+
+                res.status(200).json(result);
+
+            } catch (error) {
+                console.error("Error fetching transactions:", error);
+                res.status(500).json({ message: "Internal Server Error" });
             }
-            else{
-                sortOption.date = order;
-            }
-            const cursor = finEaseCollection.find(query).sort(sortOption);
-            const result = await cursor.toArray();
-            res.send(result);
-        })
+        });
 
         app.get('/transactions/:id', async (req, res) => {
             const id = req.params.id;
